@@ -38,29 +38,32 @@ def register_form():
     
     Process the registration form by adding a new user. Then redirect to "/secret"
     """
-    form = AddUserForm()
-    if form.validate_on_submit():
-        username = form.username.data.lower()
-        password = form.password.data
-        email = form.email.data.lower()
-        first_name = form.first_name.data.lower()
-        last_name = form.last_name.data.lower()
+    if "user_username" not in session:
+        form = AddUserForm()
+        if form.validate_on_submit():
+            username = form.username.data.lower()
+            password = form.password.data
+            email = form.email.data.lower()
+            first_name = form.first_name.data.lower()
+            last_name = form.last_name.data.lower()
 
-        new_user = User.register(username=username, password=password, email=email, first_name=first_name, last_name=last_name)
-        db.session.add(new_user)
-        try:
-            db.session.commit()
-        except IntegrityError:
-            flash(f'The username has been taken. Please pick another', 'danger')
+            new_user = User.register(username=username, password=password, email=email, first_name=first_name, last_name=last_name)
+            db.session.add(new_user)
+            try:
+                db.session.commit()
+            except IntegrityError:
+                flash(f'The username has been taken. Please pick another', 'danger')
+                return render_template('register.html', form=form)
+            
+            session['user_username'] = new_user.username
+            flash(f'Welcome! Successfully created your Account!', 'success')
+            return redirect(f'/users/{ new_user.username }')
+        else:
             return render_template('register.html', form=form)
-        
-        session['user_username'] = new_user.username
-        flash(f'Welcome! Successfully created your Account!', 'success')
-        return redirect(f'/users/{ new_user.username }')
     else:
-        return render_template('register.html', form=form)
+        return redirect(f"/users/{ session['user_username'] }")
 
-
+    
 @app.route('/login', methods=["GET", "POST"])
 def login_form():
     """
@@ -69,21 +72,24 @@ def login_form():
 
     Process the login form, ensuring the user is authenticated and going to "/secret if" so.
     """
-    form = LoginForm()
-    if form.validate_on_submit():
-        username = form.username.data.lower()
-        password = form.password.data
+    if "user_username" not in session:
+        form = LoginForm()
+        if form.validate_on_submit():
+            username = form.username.data.lower()
+            password = form.password.data
 
-        login_user = User.authenticate(username, password)
+            login_user = User.authenticate(username, password)
+            
+            if login_user:
+                session['user_username'] = login_user.username
+                return redirect(f'/users/{ login_user.username }')
+            else:
+                flash(f"Invalid username/password", 'danger')
         
-        if login_user:
-            session['user_username'] = login_user.username
-            return redirect(f'/users/{ login_user.username }')
-        else:
-            flash(f"Invalid username/password", 'danger')
-    
-    return render_template('login.html', form=form)
-
+        return render_template('login.html', form=form)
+    else:
+        return redirect(f"/users/{ session['user_username'] }")
+        
 
 @app.route('/logout')
 def logout():
