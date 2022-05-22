@@ -89,3 +89,12 @@ def secrect_page():
         return redirect('/')
     else:
         return render_template('secret.html')
+
+
+@app.route('/logout')
+def logout():
+    """
+    Clear any information from the session and redirect to "/"
+    """
+    session.pop('user_username')
+    return redirect('/')
