@@ -50,7 +50,7 @@ def register_form():
         db.session.commit()
         
         flash(f"The user was added", 'success')
-        return redirect("/secret")
+        return redirect(f'/users/{ new_user.username }')
     else:
         return render_template('register.html', form=form)
 
@@ -72,23 +72,11 @@ def login_form():
         
         if login_user:
             session['user_username'] = login_user.username
-            return redirect('/secret')
+            return redirect(f'/users/{ login_user.username }')
         else:
             flash(f"Invalid username/password", 'danger')
     
     return render_template('login.html', form=form)
-
-
-@app.route('/secret')
-def secrect_page():
-    """
-    Return the text "You made it!"
-    """
-    if "user_username" not in session:
-        flash("You must be logged in to view!", 'danger')
-        return redirect('/')
-    else:
-        return render_template('secret.html')
 
 
 @app.route('/logout')
@@ -98,3 +86,17 @@ def logout():
     """
     session.pop('user_username')
     return redirect('/')
+
+
+@app.route('/users/<username>')
+def user_profile(username):
+    """
+    Display a template the shows information about that user (everything except for their password)
+    You should ensure that only logged in users can access this page.
+    """
+    if "user_username" not in session:
+        flash("You must be logged in to view!", 'danger')
+        return redirect('/login')
+    else:
+        user = User.query.filter_by(username=username).first()
+        return render_template('user_profile.html', user=user)
