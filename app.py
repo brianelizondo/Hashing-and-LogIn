@@ -19,12 +19,14 @@ def page_not_found(e):
     """
     return render_template('404.html'), 404
 
+
 @app.route('/')
 def homepage():
     """
     Redirect to /register
     """
     return redirect('/register')
+
 
 @app.route('/register', methods=["GET", "POST"])
 def register_form():
@@ -52,6 +54,7 @@ def register_form():
     else:
         return render_template('register.html', form=form)
 
+
 @app.route('/login', methods=["GET", "POST"])
 def login_form():
     """
@@ -69,15 +72,20 @@ def login_form():
         
         if login_user:
             session['user_username'] = login_user.username
-            return redirect("/secret")
+            return redirect('/secret')
         else:
             flash(f"Invalid username/password", 'danger')
     
     return render_template('login.html', form=form)
+
 
 @app.route('/secret')
 def secrect_page():
     """
     Return the text "You made it!"
     """
-    return "You made it!"
+    if "user_username" not in session:
+        flash("You must be logged in to view!", 'danger')
+        return redirect('/')
+    else:
+        return render_template('secret.html')
