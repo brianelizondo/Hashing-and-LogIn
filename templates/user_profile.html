@@ -8,7 +8,10 @@
     <div class="row">
         <h1 class="display-5">{{ user.username.upper() }}</h1>
     </div>
-    <div class="row mt-3">
+    <div>
+        <a class="btn btn-outline-danger btn-sm" href="/users/{{ user.username }}/delete" role="button"><i class="fa-solid fa-trash-can"></i> Delete User</a>
+    </div>
+    <div class="row mt-5">
         <div><b>Username:</b> {{ user.username }}</div>
     </div>
     <div class="row">
@@ -20,5 +23,35 @@
     <div class="row">
         <div><b>Last Name:</b> {{ user.last_name.capitalize() }}</div>
     </div>
+
+    <div class="row mt-5">
+        <h1 class="display-6">Feedbacks</h1>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, msg in messages %}
+    <div class="alert alert-{{ category }} mt-3" role="alert">{{ msg }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <div class="row">
+        
+    </div>
+    
+    {% for feedback in feedbacks %}
+    <div class="card mt-3">
+        <div class="card-body">
+            <h5 class="card-title">{{ feedback.title.capitalize() }}</h5>
+            <p class="card-text">{{ feedback.content }}</p>
+        </div>
+        <div class="card-footer text-muted text-end">
+            <a href="/feedback/{{ feedback.id }}/update" class="btn btn-primary"><i class="fa-solid fa-pen-to-square"></i></a>
+            <a href="/feedback/{{ feedback.id }}/delete" class="btn btn-danger ms-1"><i class="fa-solid fa-trash-can"></i></a>
+        </div>
+    </div>
+    {% endfor %}
+    <a href="/users/{{ user.username }}/feedback/add" class="btn btn-success mt-3"><i class="fa-solid fa-circle-plus"></i> Add New Feedback</a>
 </div>
 {% endblock %}

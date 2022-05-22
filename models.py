@@ -22,7 +22,7 @@ class User(db.Model):
     first_name = db.Column(db.String(30), nullable=False)
     last_name = db.Column(db.String(30), nullable=False)
 
-    feedbacks = db.relationship('Feedback', cascade='all, delete', passive_deletes=True)
+    # feedbacks = db.relationship('Feedback', cascade='all, delete', passive_deletes=True)
 
     def get_full_name(self):
         """ Get the user full name """

@@ -1,6 +1,6 @@
 """ Forms for for Feedback app """
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, EmailField
+from wtforms import StringField, PasswordField, EmailField, TextAreaField
 from wtforms.validators import InputRequired
 
 class AddUserForm(FlaskForm):
@@ -18,3 +18,9 @@ class LoginForm(FlaskForm):
 
     username = StringField("Username", validators=[InputRequired(message='Please enter your Username')])
     password = PasswordField("Password", validators=[InputRequired(message='Please enter your Password')])
+
+class FeedbackForm(FlaskForm):
+    """ Form for adding Feedbacks """
+
+    title = StringField("Title", validators=[InputRequired(message='Please enter the Title')])
+    content = TextAreaField("Content", validators=[InputRequired(message='Please enter the Content')])
