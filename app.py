@@ -16,9 +16,16 @@ connect_db(app)
 @app.errorhandler(404)
 def page_not_found(e):
     """
-    Custom 404 Error Page
+    Custom 404 Error Page when a user or feedback can not be found
     """
     return render_template('404.html'), 404
+
+@app.errorhandler(401)
+def page_not_authorized(e):
+    """
+    Custom 401 page when users are not authenticated or not authorized
+    """
+    return render_template('401.html'), 401
 
 
 @app.route('/')
@@ -89,7 +96,7 @@ def login_form():
         return render_template('login.html', form=form)
     else:
         return redirect(f"/users/{ session['user_username'] }")
-        
+
 
 @app.route('/logout')
 def logout():
